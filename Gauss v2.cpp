@@ -3,11 +3,10 @@
 #include <iomanip>
 #include <cstdlib>  
 #include <cmath>    
-
 using namespace std;
 
 const int MAX_SIZE = 100;
-
+//Initializing the matrix
 vector<vector<double>> initial(int n, int m) {
     vector<vector<double>> A(n, vector<double>(m));
     for (int i = 0; i < n; i++) {
@@ -15,7 +14,7 @@ vector<vector<double>> initial(int n, int m) {
     }
     return A;
 }
-
+//Output of matrix
 void out(const vector<vector<double>>& A, int str, int stolb) {
     cout << endl;
     for (int i = 0; i < str; i++) {
@@ -26,7 +25,7 @@ void out(const vector<vector<double>>& A, int str, int stolb) {
     }
     cout << endl;
 }
-
+//Matrix solution using Gauss Method
 vector<double> gauss(vector<vector<double>>& matrix, int n, int m) {
     vector<double> output(n);
 
@@ -70,13 +69,15 @@ vector<double> gauss(vector<vector<double>>& matrix, int n, int m) {
 
     return output;
 }
-
+//Solution of the symetric matrix using LDL^T factorization
 vector<double> LDLTFactorization(vector<vector<double>>& matrix, int n, int m) {
+    //Initializing matrix L and vector D
     vector<vector<double>> L(n, vector<double>(n));
     vector<double> D(n, 0.0);
 
     for (int j = 0; j < n; j++) {
         double sum = 0.0;
+        //Finding(vichislenie to be correct =)) diagonal element D
         for (int k = 0; k < j; k++) {
             sum += L[j][k] * L[j][k] * D[k];
         }
@@ -94,7 +95,7 @@ vector<double> LDLTFactorization(vector<vector<double>>& matrix, int n, int m) {
             L[i][j] = (matrix[i][j] - sum) / D[j];
         }
     }
-
+    //SLAU solution with bottom triangle matrix L
     vector<double> y(n);
     for (int i = 0; i < n; i++) {
         double sum = 0.0;
@@ -103,12 +104,12 @@ vector<double> LDLTFactorization(vector<vector<double>>& matrix, int n, int m) {
         }
         y[i] = (matrix[i][m - 1] - sum) / L[i][i];
     }
-
+    //SLAU solution with diagonal matrix D
     vector<double> z(n);
     for (int i = 0; i < n; i++) {
         z[i] = y[i] / D[i];
     }
-
+    //SLAU solution with upper matrix L^T
     vector<double> x(n);
     for (int i = n - 1; i >= 0; i--) {
         double sum = 0.0;
@@ -130,10 +131,22 @@ void mult(const vector<vector<double>>& x, int n, int m, const vector<double>& y
     }
 }
 
+double calculateNorm(const vector<double>& vec) {
+    double maxNorm = 0.0;
+    for (double value : vec) {
+        double absValue = abs(value);
+        if (absValue > maxNorm) {
+            maxNorm = absValue;
+        }
+    }
+    return maxNorm;
+}
+
 int main() {
     int n=3, m=4;
     
-    vector<vector<double>> matrix = initial(n, m);
+    vector<vector<double>> matrix = initial(n, m + 1);
+    vector<vector<double>> symetricMatrix = initial(n, m + 1);
 
        matrix[0][0] = 21.547;
     matrix[0][1] = -95.510;
@@ -148,13 +161,36 @@ int main() {
     matrix[0][3] = -49.930;
     matrix[1][3] = -12.465;
     matrix[2][3] = 60.812;
-
+    
+    symetricMatrix[0][0] = 6;
+    symetricMatrix[0][1] = 13;
+    symetricMatrix[0][2] = -17;
+    symetricMatrix[1][0] = 13;
+    symetricMatrix[1][1] = 29;
+    symetricMatrix[1][2] = -38;
+    symetricMatrix[2][0] = -17;
+    symetricMatrix[2][1] = -38;
+    symetricMatrix[2][2] = 50;
+    
+    symetricMatrix[0][3] = 2;
+    symetricMatrix[1][3] = 4;
+    symetricMatrix[2][3] = -5;
 
     int method;
     cout << "Enter method:" << endl;
     cout << "1. Method of Gauss" << endl;
     cout << "2. LDL^T factorization" << endl;
     cin >> method;
+
+     vector<vector<double>> copy(n, vector<double>(n));
+    vector<double> rightHandSide(n);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            copy[i][j] = matrix[i][j];
+        }
+        rightHandSide[i] = matrix[i][n];
+    }
 
     vector<double> solution;
 
@@ -166,7 +202,7 @@ int main() {
             cout << "x[" << i << "] = " << solution[i] << endl;
         }
     } else if (method == 2) {
-        solution = LDLTFactorization(matrix, n, m);
+        solution = LDLTFactorization(symetricMatrix, n, m);
 
         cout << "LDL^T factorization solution" << endl;
         for (int i = 0; i < n; i++) {
@@ -175,20 +211,7 @@ int main() {
     } else {
         cout << "Error." << endl;
     }
-
-    vector<vector<double>> copy(n, vector<double>(n));
-    vector<double> rightHandSide(n);
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            copy[i][j] = matrix[i][j];
-        }
-        rightHandSide[i] = matrix[i][n];
-    }
-
-   
-
-    solution = gauss(matrix, n, m);
+    
     vector<double> residualVector(n);
 
     mult(copy, n, n, solution, residualVector);
@@ -202,29 +225,27 @@ int main() {
         cout << residualVector[i] << setw(5) << " ";
     }
     cout << endl;
+    
+double residualNorm = calculateNorm(residualVector);
+cout << "Norm of the Residual Vector: " << residualNorm << endl;
 
-    double totalError = 0.0;
-    for (int i = 0; i < n; i++) {
-        double error = abs(residualVector[i]);
-        totalError += error;
-    }
+  vector<double> auxiliarySolution = gauss(matrix, n, m);
+  
+double relativeErrorAuxiliary = 0.0;
 
-    double relativeError = 0.0;
-
-    for (int i = 0; i < n; i++) {
-        double expectedValue = abs(rightHandSide[i]);
-
-        double error = abs(residualVector[i]);
-        if (expectedValue > 0.0) {
-            double relative = error / expectedValue;
-            if (relative > relativeError) {
-                relativeError = relative;
-            }
+for (int i = 0; i < n; i++) {
+    double originalValue = solution[i];
+    double auxiliaryValue = auxiliarySolution[i];
+    
+    if (originalValue != 0.0) {
+        double relative = abs(auxiliaryValue - originalValue) / abs(originalValue);
+        if (relative > relativeErrorAuxiliary) {
+            relativeErrorAuxiliary = relative;
         }
     }
+}
 
-    cout << "Total error: " << totalError << endl;
-    cout << "Relative error: " << relativeError << endl;
-
+cout << "Relative error for auxiliary system solution: " << relativeErrorAuxiliary << endl;
     return 0;
 }
+//Something wrong, but something also correct. ;-(
