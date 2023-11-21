@@ -17,12 +17,12 @@ double** initial(int n, int m)
 
 double function1(double x1, double x2)
 {
-  return (x1 * x1 * x1 + x2 * x2 * x2 - 6 * x1 + 3);
+  return (2 * x1 * x1 * x1 + x2 * x2 - 1);
 }
 
 double function2(double x1, double x2)
 {
-  return (x1 * x1 * x1 - x2 * x2 * x2 - 6 * x2 + 2);
+  return (x1 * x2 * x2 * x2 - x2 - 4);
 }
 
 
