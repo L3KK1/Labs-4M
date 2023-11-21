@@ -207,7 +207,7 @@ int main()
  double* answer = new double[n];
  answer = Newton(n, x1, x2);
 
- if (otvet != NULL)
+ if (answer != NULL)
  {  
      cout << "____________" << endl;
      for (int i = 0; i < n; i++)
