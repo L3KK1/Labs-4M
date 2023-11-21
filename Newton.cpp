@@ -202,7 +202,7 @@ double* Newton(int n, double x1, double x2)
 int main()
 {
  double x1, x2;
- x1 = 0.5; x2 = 0.2;
+ x1 = 1; x2 = 1;
  int n = 2;
  double* answer = new double[n];
  answer = Newton(n, x1, x2);
