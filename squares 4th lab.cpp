@@ -27,7 +27,7 @@ int m = 2;
 double* POWERX = new double[2*m];
 cout << "POWERX: "; 
 
-for (int k = 0; k < m; k++)
+for (int k = 0; k < 2 * m; k++)
 {   
     POWERX[k] = 0;
     for (int i = 0; i < N; i++){
