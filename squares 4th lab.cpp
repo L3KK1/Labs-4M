@@ -68,7 +68,7 @@ for (int i = 0; i < N; i++){
 }
 S2 /= N - m - 1;
 double sigma = sqrt(S2);
-cout << 'Коэффіценты a: ' << endl;
+cout << "Коэффіценты a: " << endl;
 for (int i = 0; i < m + 1; i++){
     cout << a[i] << " ";
 }
